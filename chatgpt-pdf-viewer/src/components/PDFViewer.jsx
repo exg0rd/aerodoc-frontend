@@ -3,13 +3,8 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import TextViewer from './TextViewer';
 import './PDFViewer.css';
 
-// Set up the worker for PDF.js - using local version
-try {
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
-} catch (err) {
-  // Fallback to CDN if local worker is not available
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-}
+// Set up the worker for PDF.js - using CDN version for better compatibility
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
   // If document type is text, render TextViewer instead
@@ -76,7 +71,7 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
         <div className="search-box">
           <input
             type="text"
-            placeholder="Search and highlight text..."
+            placeholder="Поиск и выделение текста..."
             value={highlightText}
             onChange={handleSearchInputChange}
           />
@@ -85,13 +80,13 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
         {numPages && (
           <div className="pagination">
             <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
-              Previous
+              Предыдущая
             </button>
             <span>
-              Page {pageNumber} of {numPages}
+              Страница {pageNumber} из {numPages}
             </span>
             <button onClick={goToNextPage} disabled={pageNumber >= numPages}>
-              Next
+              Следующая
             </button>
           </div>
         )}
@@ -99,7 +94,7 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
       
       <div className="pdf-container-inner">
         {loading ? (
-          <div className="loading">Loading PDF...</div>
+          <div className="loading">Загрузка PDF...</div>
         ) : error ? (
           <div className="error">{error}</div>
         ) : (

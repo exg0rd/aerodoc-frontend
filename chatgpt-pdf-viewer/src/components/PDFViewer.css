@@ -29,6 +29,8 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 250px;
+  background-color: white;
+  color: #333;
 }
 
 [data-theme="dark"] .search-box input {
@@ -76,6 +78,44 @@
 
 [data-theme="dark"] .pdf-container-inner {
   background-color: #1e1e1e;
+}
+
+/* Scrollbar styling for light theme */
+.pdf-container-inner::-webkit-scrollbar {
+  width: 12px;
+}
+
+.pdf-container-inner::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.pdf-container-inner::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.pdf-container-inner::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Dark theme scrollbar styling */
+[data-theme="dark"] .pdf-container-inner::-webkit-scrollbar {
+  width: 12px;
+}
+
+[data-theme="dark"] .pdf-container-inner::-webkit-scrollbar-track {
+  background: #3c3c3c;
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .pdf-container-inner::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .pdf-container-inner::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .react-pdf__Page {

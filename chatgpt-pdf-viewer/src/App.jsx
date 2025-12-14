@@ -78,7 +78,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>ChatGPT-like PDF Viewer</h1>
+        <h1>Просмотрщик PDF в стиле ChatGPT</h1>
         <div className="header-actions">
           <input
             type="file"
@@ -91,12 +91,12 @@ function App() {
             className="upload-btn"
             onClick={() => fileInputRef.current?.click()}
           >
-            Upload Document
+            Загрузить документ
           </button>
           <button 
             className="theme-toggle-btn"
             onClick={toggleDarkMode}
-            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={darkMode ? "Переключиться в светлый режим" : "Переключиться в темный режим"}
           >
             {darkMode ? '☀️' : '🌙'}
           </button>
@@ -128,7 +128,7 @@ function App() {
               />
             ) : (
               <div className="pdf-placeholder">
-                <p>No document loaded. Upload a PDF or click a link in the chat to view documents here.</p>
+                <p>Документ не загружен. Загрузите PDF или нажмите на ссылку в чате, чтобы открыть документ здесь.</p>
               </div>
             )}
           </div>

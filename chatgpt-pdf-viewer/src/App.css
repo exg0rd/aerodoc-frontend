@@ -82,9 +82,47 @@
   overflow-y: auto;
 }
 
+/* Scrollbar styling for light theme */
+.settings-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.settings-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.settings-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.settings-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
 [data-theme="dark"] .settings-container {
   border-right: 1px solid #555;
   background-color: #2d2d2d;
+}
+
+/* Dark theme scrollbar styling */
+[data-theme="dark"] .settings-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+[data-theme="dark"] .settings-container::-webkit-scrollbar-track {
+  background: #3c3c3c;
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .settings-container::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .settings-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .right-panel {
