@@ -5,6 +5,10 @@
   background-color: #fafafa;
 }
 
+[data-theme="dark"] .chat-window {
+  background-color: #2d2d2d;
+}
+
 .messages-container {
   flex: 1;
   overflow-y: auto;
@@ -12,6 +16,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+[data-theme="dark"] .messages-container {
+  background-color: #1e1e1e;
 }
 
 .message {
@@ -35,10 +43,20 @@
   border-bottom-left-radius: 2px;
 }
 
+[data-theme="dark"] .bot-message {
+  background-color: #3c3c3c;
+  border: 1px solid #555;
+  color: white;
+}
+
 .bot-message a {
   color: #007bff;
   text-decoration: underline;
   cursor: pointer;
+}
+
+[data-theme="dark"] .bot-message a {
+  color: #4d9eff;
 }
 
 .typing-indicator {
@@ -76,12 +94,23 @@
   gap: 0.5rem;
 }
 
+[data-theme="dark"] .input-form {
+  background-color: #2d2d2d;
+  border-top: 1px solid #555;
+}
+
 .input-form input {
   flex: 1;
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+[data-theme="dark"] .input-form input {
+  background-color: #3c3c3c;
+  color: #fff;
+  border: 1px solid #555;
 }
 
 .input-form button {
@@ -93,7 +122,15 @@
   cursor: pointer;
 }
 
+[data-theme="dark"] .input-form button {
+  background-color: #0056b3;
+}
+
 .input-form button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+[data-theme="dark"] .input-form button:disabled {
+  background-color: #5a5a5a;
 }

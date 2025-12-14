@@ -5,6 +5,10 @@
   background-color: #f0f0f0;
 }
 
+[data-theme="dark"] .pdf-viewer {
+  background-color: #2d2d2d;
+}
+
 .pdf-controls {
   padding: 0.5rem;
   background-color: #f5f5f5;
@@ -15,11 +19,22 @@
   gap: 1rem;
 }
 
+[data-theme="dark"] .pdf-controls {
+  background-color: #3c3c3c;
+  border-bottom: 1px solid #555;
+}
+
 .search-box input {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 250px;
+}
+
+[data-theme="dark"] .search-box input {
+  background-color: #555;
+  color: #fff;
+  border: 1px solid #666;
 }
 
 .pagination {
@@ -37,9 +52,17 @@
   cursor: pointer;
 }
 
+[data-theme="dark"] .pagination button {
+  background-color: #0056b3;
+}
+
 .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+[data-theme="dark"] .pagination button:disabled {
+  background-color: #5a5a5a;
 }
 
 .pdf-container-inner {
@@ -51,10 +74,18 @@
   padding: 1rem;
 }
 
+[data-theme="dark"] .pdf-container-inner {
+  background-color: #1e1e1e;
+}
+
 .react-pdf__Page {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   background: white;
   margin: 0 auto;
+}
+
+[data-theme="dark"] .react-pdf__Page {
+  box-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
 
 .react-pdf__Page__textContent {
@@ -67,12 +98,25 @@
   padding: 2px;
 }
 
+[data-theme="dark"] .highlight-term {
+  background-color: #ffff00;
+  color: black;
+}
+
 .loading, .error {
   padding: 2rem;
   text-align: center;
   color: #666;
 }
 
+[data-theme="dark"] .loading, [data-theme="dark"] .error {
+  color: #aaa;
+}
+
 .error {
   color: #d32f2f;
+}
+
+[data-theme="dark"] .error {
+  color: #ff6b6b;
 }

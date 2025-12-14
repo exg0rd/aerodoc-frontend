@@ -1,11 +1,23 @@
 import React, { useState, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import TextViewer from './TextViewer';
 import './PDFViewer.css';
 
 // Set up the worker for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
+  // If document type is text, render TextViewer instead
+  if (document.type === 'text') {
+    return (
+      <TextViewer 
+        document={document} 
+        highlightText={highlightText}
+        onHighlightChange={onHighlightChange}
+      />
+    );
+  }
+
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(true);

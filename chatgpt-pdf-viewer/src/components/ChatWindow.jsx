@@ -17,7 +17,8 @@ const ChatWindow = ({ onLinkClick }) => {
   // Sample documents for demonstration
   const sampleDocs = [
     { type: 'pdf', url: '/sample.pdf', name: 'Sample Document.pdf', text: 'important findings' },
-    { type: 'pdf', url: '/report.pdf', name: 'Annual Report.pdf', text: 'financial data' }
+    { type: 'pdf', url: '/report.pdf', name: 'Annual Report.pdf', text: 'financial data' },
+    { type: 'text', url: '/sample.txt', name: 'Sample Document.txt', text: 'important findings' }
   ];
 
   const scrollToBottom = () => {
