@@ -24,29 +24,60 @@
 
 .message {
   max-width: 80%;
-  padding: 0.75rem;
-  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
   line-height: 1.5;
+  position: relative;
+  word-wrap: break-word;
 }
 
 .user-message {
   align-self: flex-end;
   background-color: #007bff;
   color: white;
-  border-bottom-right-radius: 2px;
+  border-bottom-right-radius: 4px;
+}
+
+.user-message::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -8px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 8px solid #007bff;
 }
 
 .bot-message {
   align-self: flex-start;
   background-color: white;
   border: 1px solid #e0e0e0;
-  border-bottom-left-radius: 2px;
+  color: #333;
+  border-bottom-left-radius: 4px;
 }
 
 [data-theme="dark"] .bot-message {
   background-color: #3c3c3c;
   border: 1px solid #555;
   color: white;
+}
+
+.bot-message::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 8px solid white;
+}
+
+[data-theme="dark"] .bot-message::before {
+  border-right: 8px solid #3c3c3c;
 }
 
 .bot-message a {
