@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatWindow from './components/ChatWindow';
 import PDFViewer from './components/PDFViewer';
+import SettingsPanel from './components/SettingsPanel';
 import './App.css';
 
 function App() {
   const [activeDocument, setActiveDocument] = useState(null);
   const [highlightText, setHighlightText] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [searchResultsCount, setSearchResultsCount] = useState(5);
+  const [useGraphRAG, setUseGraphRAG] = useState(true);
+  const [detectContradictions, setDetectContradictions] = useState(false);
   const fileInputRef = useRef(null);
 
   // Initialize dark mode based on system preference or stored preference
@@ -100,22 +104,34 @@ function App() {
       </header>
       
       <div className="main-container">
-        <div className="chat-container">
-          <ChatWindow onLinkClick={handleLinkClick} />
+        <div className="settings-container">
+          <SettingsPanel 
+            searchResultsCount={searchResultsCount}
+            setSearchResultsCount={setSearchResultsCount}
+            useGraphRAG={useGraphRAG}
+            setUseGraphRAG={setUseGraphRAG}
+            detectContradictions={detectContradictions}
+            setDetectContradictions={setDetectContradictions}
+          />
         </div>
-        
-        <div className="pdf-container">
-          {activeDocument ? (
-            <PDFViewer 
-              document={activeDocument} 
-              highlightText={highlightText}
-              onHighlightChange={setHighlightText}
-            />
-          ) : (
-            <div className="pdf-placeholder">
-              <p>No document loaded. Upload a PDF or click a link in the chat to view documents here.</p>
-            </div>
-          )}
+        <div className="right-panel">
+          <div className="chat-container">
+            <ChatWindow onLinkClick={handleLinkClick} />
+          </div>
+          
+          <div className="pdf-container">
+            {activeDocument ? (
+              <PDFViewer 
+                document={activeDocument} 
+                highlightText={highlightText}
+                onHighlightChange={setHighlightText}
+              />
+            ) : (
+              <div className="pdf-placeholder">
+                <p>No document loaded. Upload a PDF or click a link in the chat to view documents here.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

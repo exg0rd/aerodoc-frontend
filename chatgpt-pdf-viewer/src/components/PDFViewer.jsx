@@ -3,8 +3,13 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import TextViewer from './TextViewer';
 import './PDFViewer.css';
 
-// Set up the worker for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Set up the worker for PDF.js - using local version
+try {
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
+} catch (err) {
+  // Fallback to CDN if local worker is not available
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+}
 
 const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
   // If document type is text, render TextViewer instead
