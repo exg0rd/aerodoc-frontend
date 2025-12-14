@@ -1,0 +1,23 @@
+{
+  "name": "aerodoc-front",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exg0rd/aerodoc-frontend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exg0rd/aerodoc-frontend/issues"
+  },
+  "homepage": "https://github.com/exg0rd/aerodoc-frontend#readme",
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
+}
