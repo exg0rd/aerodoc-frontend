@@ -1,11 +1,23 @@
 // Basic API server using ES modules (for compatibility with "type": "module" in package.json)
 import { createServer } from 'http';
 import { parse } from 'url';
+import fs from 'fs';
+import path from 'path';
 
 const port = process.env.PORT || 3001;
 const DELAY_MIN = parseInt(process.env.DELAY_MIN) || 500;  // Minimum delay in ms
 const DELAY_MAX = parseInt(process.env.DELAY_MAX) || 2000; // Maximum delay in ms
 const DEFAULT_SOURCE_COUNT = parseInt(process.env.DEFAULT_SOURCE_COUNT) || 5;
+
+// Read the database file
+let dbData = { responses: [] };
+try {
+  const dbPath = path.join(process.cwd(), 'db.json');
+  const dbContent = fs.readFileSync(dbPath, 'utf8');
+  dbData = JSON.parse(dbContent);
+} catch (error) {
+  console.error('Error reading database file:', error.message);
+}
 
 // Enable CORS headers
 const setCORSHeaders = (res) => {
@@ -20,6 +32,54 @@ const addDelay = (min, max) => {
     const delay = Math.floor(Math.random() * (max - min + 1)) + min;
     setTimeout(() => resolve(delay), delay);
   });
+};
+
+// Function to find response in the database based on query
+const findResponseInDB = (query) => {
+  const normalizedQuery = query.toLowerCase().trim();
+
+  // First, try exact or substring matching
+  const exactMatch = dbData.responses.find(resp => 
+    resp.query.toLowerCase().includes(normalizedQuery) || 
+    normalizedQuery.includes(resp.query.toLowerCase())
+  );
+
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  // If no exact match, try fuzzy matching by checking if any query word appears in the user query
+  for (const response of dbData.responses) {
+    const queryWords = response.query.toLowerCase().split(/\s+/);
+    const userInputWords = normalizedQuery.split(/\s+/);
+    
+    // Count how many words from the response query appear in user input
+    const matchingWords = queryWords.filter(word => userInputWords.includes(word)).length;
+    
+    // If at least half of the words match, consider it a match
+    if (matchingWords >= Math.ceil(queryWords.length / 2)) {
+      return response;
+    }
+  }
+
+  // If still no match, check if any individual word from user query matches any word from response queries
+  const userInputWords = normalizedQuery.split(/\s+/);
+  for (const response of dbData.responses) {
+    const queryWords = response.query.toLowerCase().split(/\s+/);
+    for (const userWord of userInputWords) {
+      if (queryWords.some(qw => qw.includes(userWord) || userWord.includes(qw))) {
+        return response;
+      }
+    }
+  }
+
+  // Return default response if no match found
+  return dbData.responses.find(r => r.query === 'default') || {
+    id: 0,
+    query: 'default',
+    answer: 'Извините, я не нашел подходящего ответа на ваш запрос.',
+    sources: []
+  };
 };
 
 const server = createServer(async (req, res) => {
@@ -53,36 +113,15 @@ const server = createServer(async (req, res) => {
         const data = JSON.parse(body);
         const { message, source_count = DEFAULT_SOURCE_COUNT, use_graph_rag = true, detect_contradictions = false } = data;
 
-        // Generate a random response from our hardcoded responses
-        const responses = [
-          {
-            id: Date.now(),
-            answer: `Processing your query: "${message}". This response was generated with ${source_count} sources. Graph RAG: ${use_graph_rag}, Contradiction Detection: ${detect_contradictions}.`,
-            sources: Array.from({ length: source_count }, (_, i) => ({
-              id: i + 1,
-              title: `Source Document ${i + 1}`,
-              url: `/docs/doc_${i + 1}.pdf`,
-              page: Math.floor(Math.random() * 10) + 1,
-              content: `Relevant content from source document ${i + 1} related to your query: "${message}".`,
-              score: (Math.random() * 0.9 + 0.1).toFixed(2) // Random score between 0.1 and 1.0
-            }))
-          },
-          {
-            id: Date.now(),
-            answer: `I analyzed your question about "${message}" using ${source_count} document sources. The system is configured with Graph RAG: ${use_graph_rag} and contradiction detection: ${detect_contradictions}.`,
-            sources: Array.from({ length: Math.min(source_count, 3) }, (_, i) => ({
-              id: i + 1,
-              title: `Analysis Report ${i + 1}`,
-              url: `/reports/report_${i + 1}.pdf`,
-              page: Math.floor(Math.random() * 5) + 1,
-              content: `Detailed analysis from report ${i + 1} showing relevant findings for query: "${message}".`,
-              score: (Math.random() * 0.9 + 0.1).toFixed(2)
-            }))
-          }
-        ];
+        // Find response in the database
+        const foundResponse = findResponseInDB(message);
 
-        // Select a random response
-        const selectedResponse = responses[Math.floor(Math.random() * responses.length)];
+        // Prepare the response object
+        const selectedResponse = {
+          id: foundResponse.id,
+          answer: foundResponse.answer,
+          sources: foundResponse.sources || []
+        };
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(selectedResponse));
