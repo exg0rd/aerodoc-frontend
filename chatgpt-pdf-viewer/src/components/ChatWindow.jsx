@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatWindow.css';
 
-const ChatWindow = ({ onLinkClick }) => {
+const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, detectContradictions = false }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -37,48 +37,41 @@ const ChatWindow = ({ onLinkClick }) => {
     setInputValue('');
     setIsLoading(true);
 
-    // Simulate bot response after delay
-    setTimeout(() => {
-      let botResponse = '';
+    try {
+      // Get settings from parent component or default values
+      const settings = {
+        source_count: searchResultsCount,
+        use_graph_rag: useGraphRAG,
+        detect_contradictions: detectContradictions
+      };
 
-      // Check if the user mentioned specific documents or asked to open one
-      const lowerInput = inputValue.toLowerCase();
-      let shouldShowDocLink = false;
-      let docToOpen = null;
-      let highlightText = '';
+      // Make API call to our backend
+      const response = await fetch('http://localhost:3001/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputValue,
+          ...settings
+        })
+      });
 
-      if (lowerInput.includes('show') || lowerInput.includes('open') || lowerInput.includes('view')) {
-        // Find if user mentioned a specific document
-        for (const doc of sampleDocs) {
-          if (lowerInput.includes(doc.name.toLowerCase().replace('.pdf', ''))) {
-            shouldShowDocLink = true;
-            docToOpen = doc;
-            break;
-          }
-        }
-
-        // If no specific doc mentioned, just suggest showing one
-        if (!shouldShowDocLink && sampleDocs.length > 0) {
-          shouldShowDocLink = true;
-          docToOpen = sampleDocs[0];
-        }
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
       }
 
-      // Check for text that might need highlighting
-      const match = inputValue.match(/highlight\s+(.+)/i);
-      if (match) {
-        highlightText = match[1].trim();
-        shouldShowDocLink = true;
-        docToOpen = sampleDocs[0];
-      }
+      const data = await response.json();
 
-      if (shouldShowDocLink && docToOpen) {
-        botResponse = `I found information about "${docToOpen.name}". Click here to view it and highlight "${highlightText || 'relevant sections'}": `;
-        botResponse += `<a href="#" class="doc-link" data-type="${docToOpen.type}" data-url="${docToOpen.url}" data-highlight="${highlightText}">
-          View ${docToOpen.name}
-        </a>`;
-      } else {
-        botResponse = `I received your message: "${inputValue}". In a real implementation, I would process your request and potentially return links to documents or specific text sections.`;
+      // Format bot response with sources
+      let botResponse = `${data.answer}`;
+      
+      if (data.sources && data.sources.length > 0) {
+        botResponse += '<br/><br/><strong>Sources:</strong><ul>';
+        data.sources.forEach(source => {
+          botResponse += `<li><a href="#" class="doc-link" data-type="pdf" data-url="${source.url}" data-highlight="">${source.title} (Page ${source.page})</a> - ${source.content.substring(0, 100)}${source.content.length > 100 ? '...' : ''}</li>`;
+        });
+        botResponse += '</ul>';
       }
 
       const botMessage = {
@@ -88,8 +81,17 @@ const ChatWindow = ({ onLinkClick }) => {
       };
 
       setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error calling API:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'bot',
+        content: `Error: Could not process your request. ${error.message}`
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleLinkClick = (e) => {
