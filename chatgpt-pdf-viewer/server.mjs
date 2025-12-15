@@ -1,13 +1,24 @@
-import jsonServer from 'json-server';
+import { createApp } from 'json-server';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { json } from 'milliparsec';
+import { cors } from '@tinyhttp/cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const server = jsonServer.create();
-const router = jsonServer.router('db.json');
-const middlewares = jsonServer.defaults();
+// Load db.json manually since the new version works differently
+import fs from 'fs';
+let db = {};
+try {
+  const dbContent = fs.readFileSync('db.json', 'utf8');
+  db = JSON.parse(dbContent);
+} catch (err) {
+  console.log('db.json not found, starting with empty database');
+  db = {};
+}
+
+const server = createApp(db, { static: [path.join(__dirname, 'public')] });
 
 // Parse environment variables with defaults
 const PORT = process.env.PORT || 3001;
@@ -15,10 +26,13 @@ const DELAY_MIN = parseInt(process.env.DELAY_MIN) || 500;  // Minimum delay in m
 const DELAY_MAX = parseInt(process.env.DELAY_MAX) || 2000; // Maximum delay in ms
 const DEFAULT_SOURCE_COUNT = parseInt(process.env.DEFAULT_SOURCE_COUNT) || 5;
 
-server.use(middlewares);
-
 // Serve static files from the test folder
-server.use('/test', jsonServer.static(path.join(__dirname, 'test')));
+server.use('/test', (req, res, next) => {
+  // Import sirv for static file serving
+  const sirv = (await import('sirv')).default;
+  const staticHandler = sirv(path.join(__dirname, 'test'), { dev: true });
+  staticHandler(req, res, next);
+});
 
 // Add delay middleware
 server.use(async (req, res, next) => {

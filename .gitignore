@@ -1,11 +1,10 @@
 ```
+# Compiled and build artifacts
+*.cjs
+*.mjs
+
 # Dependencies
 node_modules/
-
-# Environment
-.env
-.env.local
-.env.*
 
 # Logs and temp files
 *.log
@@ -14,8 +13,4 @@ node_modules/
 # Editors
 .vscode/
 .idea/
-
-# Build artifacts
-dist/
-build/
 ```
