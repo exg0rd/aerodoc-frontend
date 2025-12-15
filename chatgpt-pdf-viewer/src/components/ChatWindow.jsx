@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatWindow.css';
-import { simulateTypingEffect, findHardcodedResponse } from '../utils/typingEffect';
+import { simulateTypingEffect } from '../utils/typingEffect';
 
 const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, detectContradictions = false }) => {
   const [messages, setMessages] = useState([
@@ -39,66 +39,50 @@ const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, d
     setIsLoading(true);
 
     try {
-      // Check for hardcoded response first
-      const hardcodedResponse = findHardcodedResponse(inputValue);
-      
-      if (hardcodedResponse) {
-        // Use typing effect for hardcoded response
-        const botMessageId = Date.now() + 1;
-        
-        // Add an empty bot message initially
-        setMessages(prev => [...prev, {
-          id: botMessageId,
-          type: 'bot',
-          content: ''
-        }]);
-        
-        // Apply typing effect to update the content word by word
-        simulateTypingEffect(
-          hardcodedResponse,
-          (updatedContent) => {
-            // Update the specific message with new content
-            setMessages(prev => prev.map(msg => 
-              msg.id === botMessageId 
-                ? { ...msg, content: updatedContent }
-                : msg
-            ));
-          },
-          () => {
-            // Typing complete - hide loading indicator
-            setIsLoading(false);
-          }
-        );
-      } else {
-        // Fallback to original API call if no hardcoded response
-        // For now, we'll just use a fallback message with typing effect
-        const fallbackResponse = "Извините, я не нашел точного ответа на ваш запрос в базе данных. Пожалуйста, уточните свой вопрос.";
-        const botMessageId = Date.now() + 1;
-        
-        // Add an empty bot message initially
-        setMessages(prev => [...prev, {
-          id: botMessageId,
-          type: 'bot',
-          content: ''
-        }]);
-        
-        // Apply typing effect to update the content word by word
-        simulateTypingEffect(
-          fallbackResponse,
-          (updatedContent) => {
-            // Update the specific message with new content
-            setMessages(prev => prev.map(msg => 
-              msg.id === botMessageId 
-                ? { ...msg, content: updatedContent }
-                : msg
-            ));
-          },
-          () => {
-            // Typing complete - hide loading indicator
-            setIsLoading(false);
-          }
-        );
+      // Make API call to the backend server
+      const response = await fetch('http://localhost:3001/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: inputValue,
+          source_count: searchResultsCount,
+          use_graph_rag: useGraphRAG,
+          detect_contradictions: detectContradictions
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      const data = await response.json();
+      const botMessageId = Date.now() + 1;
+      
+      // Add an empty bot message initially
+      setMessages(prev => [...prev, {
+        id: botMessageId,
+        type: 'bot',
+        content: ''
+      }]);
+      
+      // Apply typing effect to update the content word by word
+      simulateTypingEffect(
+        data.answer,
+        (updatedContent) => {
+          // Update the specific message with new content
+          setMessages(prev => prev.map(msg => 
+            msg.id === botMessageId 
+              ? { ...msg, content: updatedContent }
+              : msg
+          ));
+        },
+        () => {
+          // Typing complete - hide loading indicator
+          setIsLoading(false);
+        }
+      );
     } catch (error) {
       console.error('Error processing request:', error);
       const errorMessage = {
