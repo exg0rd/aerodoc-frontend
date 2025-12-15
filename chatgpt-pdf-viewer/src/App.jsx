@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatWindow from './components/ChatWindow';
-import PDFViewer from './components/PDFViewer';
+// import PDFViewer from './components/PDFViewer';
 import SettingsPanel from './components/SettingsPanel';
 import './App.css';
 
@@ -43,15 +43,13 @@ function App() {
       const fileExtension = file.name.split('.').pop().toLowerCase();
 
       if (file.type === 'application/pdf' || fileExtension === 'pdf') {
-        const url = URL.createObjectURL(file);
-        setActiveDocument({ type: 'pdf', url, name: file.name });
+        setActiveDocument({ type: 'pdf', file, name: file.name });
       } else if (file.type.startsWith('text/') || fileExtension === 'txt' || fileExtension === 'md') {
         const reader = new FileReader();
         reader.onload = (e) => {
           setActiveDocument({ type: 'text', content: e.target.result, name: file.name });
         };
         reader.readAsText(file);
-        console.log(file)
       } else {
         alert('Unsupported file type. Please upload a PDF or text file.');
       }
@@ -61,7 +59,7 @@ function App() {
   const handleLinkClick = (documentType, documentUrl, highlight = '') => {
     // Construct the proper URL for the PDF file
     let fullUrl = documentUrl;
-    
+
     // If the URL starts with /test/, it means it's a reference to our test folder
     if (documentUrl.startsWith('/test/')) {
       fullUrl = `http://localhost:3001${documentUrl}`;
@@ -131,8 +129,8 @@ function App() {
           {activeDocument ? (
             <div className="chat-and-pdf-container">
               <div className="chat-container-expanded">
-                <ChatWindow 
-                  onLinkClick={handleLinkClick} 
+                <ChatWindow
+                  onLinkClick={handleLinkClick}
                   searchResultsCount={searchResultsCount}
                   useGraphRAG={useGraphRAG}
                   detectContradictions={detectContradictions}
@@ -149,8 +147,8 @@ function App() {
           ) : (
             // If no active document, show only chat
             <div className="chat-container">
-              <ChatWindow 
-                onLinkClick={handleLinkClick} 
+              <ChatWindow
+                onLinkClick={handleLinkClick}
                 searchResultsCount={searchResultsCount}
                 useGraphRAG={useGraphRAG}
                 detectContradictions={detectContradictions}
