@@ -135,23 +135,76 @@
   overflow: hidden;
 }
 
+/* Split view when both chat and PDF are present */
+.chat-and-pdf-container {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* Allow it to shrink */
+}
+
+.chat-container-expanded {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-right: 1px solid #ddd;
+}
+
+.chat-container-expanded-full {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.pdf-container-expanded {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-left: 1px solid #ddd;
+}
+
+/* Original layout when only chat or only PDF is visible */
+.chat-only {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  min-width: 0;
+}
+
+.pdf-only {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  min-width: 0;
+  border-top: 1px solid #ddd;
+}
+
 .chat-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #ddd;
+  min-height: 300px; /* Minimum height for chat */
   min-width: 0; /* Allow flex item to shrink below content size */
-}
-
-[data-theme="dark"] .chat-container {
-  border-bottom: 1px solid #555;
 }
 
 .pdf-container {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 300px; /* Minimum height for PDF viewer */
   min-width: 0; /* Allow flex item to shrink below content size */
+  border-top: 1px solid #ddd;
+}
+
+[data-theme="dark"] .pdf-container {
+  border-top: 1px solid #555;
 }
 
 .pdf-placeholder {
