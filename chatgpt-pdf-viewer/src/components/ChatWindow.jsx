@@ -65,7 +65,7 @@ const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, d
 
       // Format bot response with sources
       let botResponse = `${data.answer}`;
-      
+
       if (data.sources && data.sources.length > 0) {
         botResponse += '<br/><br/><strong>Sources:</strong><ul>';
         data.sources.forEach(source => {
@@ -133,7 +133,7 @@ const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, d
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type your message here..."
+          placeholder="Введите Ваш запрос..."
           disabled={isLoading}
         />
         <button type="submit" disabled={isLoading}>
