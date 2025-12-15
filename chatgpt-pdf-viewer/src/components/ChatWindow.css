@@ -86,8 +86,27 @@
   cursor: pointer;
 }
 
-[data-theme="dark"] .bot-message a {
-  color: #4d9eff;
+.doc-link {
+  color: #d32f2f;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.doc-link:hover {
+  background-color: #ffebee;
+  text-decoration: none;
+}
+
+[data-theme="dark"] .doc-link {
+  color: #ff6666;
+}
+
+[data-theme="dark"] .doc-link:hover {
+  background-color: #4a2c2c;
 }
 
 .typing-indicator {

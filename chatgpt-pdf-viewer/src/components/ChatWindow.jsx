@@ -106,6 +106,17 @@ const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, d
     }
   };
 
+  // Function to process message content and convert PDF references to clickable links
+  const processMessageContent = (content) => {
+    // Replace patterns like [1], [2], [3] with clickable links to PDFs
+    // Format: [number] -> link to corresponding PDF
+    return content.replace(/\[(\d+)\]/g, (match, docNumber) => {
+      // Map document numbers to actual PDF files in the test folder
+      const pdfPath = `/test/${docNumber}.pdf`;
+      return `<a href="#" class="doc-link" data-type="pdf" data-url="${pdfPath}" data-highlight="">[${docNumber}]</a>`;
+    });
+  };
+
   return (
     <div className="chat-window">
       <div className="messages-container" onClick={handleLinkClick}>
@@ -113,7 +124,7 @@ const ChatWindow = ({ onLinkClick, searchResultsCount = 5, useGraphRAG = true, d
           <div
             key={message.id}
             className={`message ${message.type}-message`}
-            dangerouslySetInnerHTML={{ __html: message.content }}
+            dangerouslySetInnerHTML={{ __html: processMessageContent(message.content) }}
           />
         ))}
         {isLoading && (

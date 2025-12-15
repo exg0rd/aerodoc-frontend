@@ -59,10 +59,21 @@ function App() {
   };
 
   const handleLinkClick = (documentType, documentUrl, highlight = '') => {
+    // Construct the proper URL for the PDF file
+    let fullUrl = documentUrl;
+    
+    // If the URL starts with /test/, it means it's a reference to our test folder
+    if (documentUrl.startsWith('/test/')) {
+      fullUrl = `http://localhost:3001${documentUrl}`;
+    } else if (!documentUrl.startsWith('http')) {
+      // For relative URLs, assume they're served from our server
+      fullUrl = `http://localhost:3001${documentUrl}`;
+    }
+
     // For now, we'll just handle PDF links to sample documents
     // In a real implementation, you might want to load the document content
     if (documentType === 'pdf') {
-      setActiveDocument({ type: documentType, url: documentUrl });
+      setActiveDocument({ type: documentType, url: fullUrl });
     } else if (documentType === 'text') {
       // For demonstration, we'll load a sample text content
       setActiveDocument({
@@ -116,28 +127,36 @@ function App() {
           />
         </div>
         <div className="right-panel">
-          <div className="chat-container">
-            <ChatWindow 
-              onLinkClick={handleLinkClick} 
-              searchResultsCount={searchResultsCount}
-              useGraphRAG={useGraphRAG}
-              detectContradictions={detectContradictions}
-            />
-          </div>
-
-          <div className="pdf-container" style={{ display: 'none' }}>
-            {activeDocument ? (
-              <PDFViewer
-                document={activeDocument}
-                highlightText={highlightText}
-                onHighlightChange={setHighlightText}
-              />
-            ) : (
-              <div className="pdf-placeholder">
-                <p>Документ не загружен. Загрузите PDF или нажмите на ссылку в чате, чтобы открыть документ здесь.</p>
+          {/* If we have an active document, show both chat and PDF side-by-side */}
+          {activeDocument ? (
+            <div className="chat-and-pdf-container">
+              <div className="chat-container-expanded">
+                <ChatWindow 
+                  onLinkClick={handleLinkClick} 
+                  searchResultsCount={searchResultsCount}
+                  useGraphRAG={useGraphRAG}
+                  detectContradictions={detectContradictions}
+                />
               </div>
-            )}
-          </div>
+              <div className="pdf-container-expanded">
+                <PDFViewer
+                  document={activeDocument}
+                  highlightText={highlightText}
+                  onHighlightChange={setHighlightText}
+                />
+              </div>
+            </div>
+          ) : (
+            // If no active document, show only chat
+            <div className="chat-container">
+              <ChatWindow 
+                onLinkClick={handleLinkClick} 
+                searchResultsCount={searchResultsCount}
+                useGraphRAG={useGraphRAG}
+                detectContradictions={detectContradictions}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

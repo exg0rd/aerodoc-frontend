@@ -3,6 +3,10 @@ import { createServer } from 'http';
 import { parse } from 'url';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const port = process.env.PORT || 3001;
 const DELAY_MIN = parseInt(process.env.DELAY_MIN) || 500;  // Minimum delay in ms
@@ -73,18 +77,13 @@ const findResponseInDB = (query) => {
     }
   }
 
-  // Return default response if no match found
-  return dbData.responses.find(r => r.query === 'default') || {
-    id: 0,
-    query: 'default',
-    answer: 'Извините, я не нашел подходящего ответа на ваш запрос.',
-    sources: []
-  };
+  // If no match found in DB, return a default response with document references
+  return null;
 };
 
 const server = createServer(async (req, res) => {
   const parsedUrl = parse(req.url, true);
-  const path = parsedUrl.pathname;
+  const pathname = parsedUrl.pathname;
   
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -101,7 +100,26 @@ const server = createServer(async (req, res) => {
   // Set CORS headers for all responses
   setCORSHeaders(res);
 
-  if (req.method === 'POST' && path === '/api/chat') {
+  // Serve static files from test directory
+  if (pathname.startsWith('/test/')) {
+    const filePath = path.join(__dirname, pathname);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'File not found' }));
+        return;
+      }
+      
+      const ext = path.extname(filePath);
+      const contentType = ext === '.pdf' ? 'application/pdf' : 'application/octet-stream';
+      
+      res.writeHead(200, { 'Content-Type': contentType });
+      fs.createReadStream(filePath).pipe(res);
+    });
+    return;
+  }
+
+  if (req.method === 'POST' && pathname === '/api/chat') {
     let body = '';
     
     req.on('data', chunk => {
@@ -113,24 +131,72 @@ const server = createServer(async (req, res) => {
         const data = JSON.parse(body);
         const { message, source_count = DEFAULT_SOURCE_COUNT, use_graph_rag = true, detect_contradictions = false } = data;
 
-        // Find response in the database
-        const foundResponse = findResponseInDB(message);
+        // First try to find response in the database
+        let foundResponse = findResponseInDB(message);
+        
+        if (foundResponse) {
+          // Prepare the response object
+          const selectedResponse = {
+            id: foundResponse.id,
+            answer: foundResponse.answer,
+            sources: foundResponse.sources || []
+          };
 
-        // Prepare the response object
-        const selectedResponse = {
-          id: foundResponse.id,
-          answer: foundResponse.answer,
-          sources: foundResponse.sources || []
-        };
-
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(selectedResponse));
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(selectedResponse));
+        } else {
+          // If no match found in DB, generate a default response with document references
+          const responses = [
+            {
+              id: Date.now(),
+              answer: `Processing your query: "${message}". This response was generated with ${source_count} sources. Graph RAG: ${use_graph_rag}, Contradiction Detection: ${detect_contradictions}. According to our analysis, please see document [1] for detailed specifications and document [2] for compliance requirements.`,
+              sources: Array.from({ length: source_count }, (_, i) => ({
+                id: i + 1,
+                title: `Source Document ${i + 1}`,
+                url: `/test/${i + 1}.pdf`,
+                page: Math.floor(Math.random() * 10) + 1,
+                content: `Relevant content from source document ${i + 1} related to your query: "${message}".`,
+                score: (Math.random() * 0.9 + 0.1).toFixed(2) // Random score between 0.1 and 1.0
+              }))
+            },
+            {
+              id: Date.now(),
+              answer: `I analyzed your question about "${message}" using ${source_count} document sources. The system is configured with Graph RAG: ${use_graph_rag} and contradiction detection: ${detect_contradictions}. Based on documents [1] and [2], the key findings indicate...`,
+              sources: Array.from({ length: Math.min(source_count, 3) }, (_, i) => ({
+                id: i + 1,
+                title: `Analysis Report ${i + 1}`,
+                url: `/test/${i + 1}.pdf`,
+                page: Math.floor(Math.random() * 5) + 1,
+                content: `Detailed analysis from report ${i + 1} showing relevant findings for query: "${message}".`,
+                score: (Math.random() * 0.9 + 0.1).toFixed(2)
+              }))
+            },
+            {
+              id: Date.now(),
+              answer: `Based on the information in document [1], I can confirm that ${message} is addressed in detail. Additionally, document [2] provides supplementary information regarding this topic. The analysis shows consistent findings across both sources.`,
+              sources: Array.from({ length: Math.min(source_count, 2) }, (_, i) => ({
+                id: i + 1,
+                title: `Technical Specification ${i + 1}`,
+                url: `/test/${i + 1}.pdf`,
+                page: Math.floor(Math.random() * 8) + 1,
+                content: `Technical details from document ${i + 1} related to: "${message}". Important specifications and guidelines are outlined.`,
+                score: (Math.random() * 0.9 + 0.1).toFixed(2)
+              }))
+            }
+          ];
+          
+          // Select a random response
+          const selectedResponse = responses[Math.floor(Math.random() * responses.length)];
+          
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(selectedResponse));
+        }
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Invalid JSON' }));
       }
     });
-  } else if (req.method === 'GET' && path === '/health') {
+  } else if (req.method === 'GET' && pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'OK', timestamp: new Date().toISOString() }));
   } else {
@@ -149,6 +215,7 @@ server.listen(port, () => {
   console.log('\nEndpoints:');
   console.log('  POST /api/chat - Process chat queries with configurable parameters');
   console.log('  GET  /health   - Health check');
+  console.log('  GET  /test/*   - Serve static files from test directory');
 });
 
 export default server;
