@@ -3,9 +3,6 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import TextViewer from './TextViewer';
 import './PDFViewer.css';
 
-// Set up the worker for PDF.js - using CDN version for better compatibility
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
 const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
   // If document type is text, render TextViewer instead
   if (document.type === 'text') {
