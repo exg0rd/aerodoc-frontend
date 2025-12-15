@@ -117,10 +117,15 @@ function App() {
         </div>
         <div className="right-panel">
           <div className="chat-container">
-            <ChatWindow onLinkClick={handleLinkClick} />
+            <ChatWindow 
+              onLinkClick={handleLinkClick} 
+              searchResultsCount={searchResultsCount}
+              useGraphRAG={useGraphRAG}
+              detectContradictions={detectContradictions}
+            />
           </div>
 
-          <div className="pdf-container">
+          <div className="pdf-container" style={{ display: 'none' }}>
             {activeDocument ? (
               <PDFViewer
                 document={activeDocument}

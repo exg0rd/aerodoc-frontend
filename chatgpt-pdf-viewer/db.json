@@ -1,0 +1,30 @@
+{
+  "responses": [
+    {
+      "id": 1,
+      "query": "default",
+      "answer": "I received your message. In a real implementation, I would process your request and return relevant information from documents.",
+      "sources": [
+        {
+          "title": "Sample Document",
+          "url": "/sample.pdf",
+          "page": 1,
+          "content": "This is sample content from a document."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "query": "test",
+      "answer": "This is a test response from the API server.",
+      "sources": [
+        {
+          "title": "Test Document",
+          "url": "/test.pdf",
+          "page": 2,
+          "content": "Testing the API functionality."
+        }
+      ]
+    }
+  ]
+}
