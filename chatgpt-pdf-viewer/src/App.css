@@ -6,7 +6,6 @@
 
 .app-header {
   padding: 1rem;
-  background-color: #f5f5f5;
   border-bottom: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
@@ -16,7 +15,11 @@
 [data-theme="dark"] .app-header {
   background-color: #333;
   border-bottom: 1px solid #555;
-  color: white;
+  color-scheme: dark;
+}
+
+.app-header {
+    color: black;
 }
 
 .header-actions {

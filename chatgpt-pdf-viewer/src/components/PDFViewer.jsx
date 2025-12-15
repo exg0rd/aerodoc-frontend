@@ -10,8 +10,8 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
   // If document type is text, render TextViewer instead
   if (document.type === 'text') {
     return (
-      <TextViewer 
-        document={document} 
+      <TextViewer
+        document={document}
         highlightText={highlightText}
         onHighlightChange={onHighlightChange}
       />
@@ -54,11 +54,11 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
   // Custom text renderer to highlight search terms
   const customTextRenderer = useCallback((itemText) => {
     if (!highlightText) return itemText;
-    
+
     const regex = new RegExp(`(${highlightText})`, 'gi');
     const parts = itemText.split(regex);
-    
-    return parts.map((part, index) => 
+
+    return parts.map((part, index) =>
       regex.test(part) ? (
         <span key={index} className="highlight-term">{part}</span>
       ) : part
@@ -76,7 +76,7 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
             onChange={handleSearchInputChange}
           />
         </div>
-        
+
         {numPages && (
           <div className="pagination">
             <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
@@ -91,10 +91,11 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
           </div>
         )}
       </div>
-      
+
       <div className="pdf-container-inner">
         {loading ? (
-          <div className="loading">Загрузка PDF...</div>
+          <div className="loading">Загрузка PDF...{console.log("loading")}</div>
+
         ) : error ? (
           <div className="error">{error}</div>
         ) : (
@@ -103,10 +104,10 @@ const PDFViewer = ({ document, highlightText, onHighlightChange }) => {
             onLoadSuccess={onDocumentLoadSuccess}
             onLoadError={onDocumentLoadError}
             loading={<div>Loading PDF...</div>}
-            error={<div>Failed to load PDF</div}}
+            error={<div>Failed to load PDF</div>}
           >
-            <Page 
-              pageNumber={pageNumber} 
+            <Page
+              pageNumber={pageNumber}
               scale={1.2}
               renderTextLayer={true}
               renderAnnotationLayer={true}

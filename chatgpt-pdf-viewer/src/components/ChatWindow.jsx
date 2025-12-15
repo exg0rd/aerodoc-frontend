@@ -6,20 +6,13 @@ const ChatWindow = ({ onLinkClick }) => {
     {
       id: 1,
       type: 'bot',
-      content: 'Hello! I can help you analyze documents. Upload a PDF or ask me questions about documents.'
+      content: 'Добрый день! Я помогу проанализировать документы. Задайте интересующий вопрос ниже, и я найду информацию!'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-
-  // Sample documents for demonstration
-  const sampleDocs = [
-    { type: 'pdf', url: '/sample.pdf', name: 'Sample Document.pdf', text: 'important findings' },
-    { type: 'pdf', url: '/report.pdf', name: 'Annual Report.pdf', text: 'financial data' },
-    { type: 'text', url: '/sample.txt', name: 'Sample Document.txt', text: 'important findings' }
-  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,7 +40,7 @@ const ChatWindow = ({ onLinkClick }) => {
     // Simulate bot response after delay
     setTimeout(() => {
       let botResponse = '';
-      
+
       // Check if the user mentioned specific documents or asked to open one
       const lowerInput = inputValue.toLowerCase();
       let shouldShowDocLink = false;
@@ -63,7 +56,7 @@ const ChatWindow = ({ onLinkClick }) => {
             break;
           }
         }
-        
+
         // If no specific doc mentioned, just suggest showing one
         if (!shouldShowDocLink && sampleDocs.length > 0) {
           shouldShowDocLink = true;
@@ -114,8 +107,8 @@ const ChatWindow = ({ onLinkClick }) => {
     <div className="chat-window">
       <div className="messages-container" onClick={handleLinkClick}>
         {messages.map((message) => (
-          <div 
-            key={message.id} 
+          <div
+            key={message.id}
             className={`message ${message.type}-message`}
             dangerouslySetInnerHTML={{ __html: message.content }}
           />
@@ -131,7 +124,7 @@ const ChatWindow = ({ onLinkClick }) => {
         )}
         <div ref={messagesEndRef} />
       </div>
-      
+
       <form className="input-form" onSubmit={handleSubmit}>
         <input
           ref={inputRef}
